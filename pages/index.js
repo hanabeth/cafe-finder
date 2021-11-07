@@ -2,6 +2,9 @@ import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import Banner from '../components/banner';
+import Card from '../components/card';
+
+import coffeeStores from '../data/coffee-stores.json';
 
 export default function Home() {
   const handleOnBannerBtnClick = () => {
@@ -21,11 +24,26 @@ export default function Home() {
         />
         <div className={styles.heroImage}>
           <Image
-            alt="girl drinking coffee"
+            alt="hero image"
             src="/static/hero-image.png"
             width={700}
             height={400}
           />
+        </div>
+        <div className={styles.sectionWrapper}>
+          <div className={styles.cardLayout}>
+            {coffeeStores.map((cafe) => {
+              return (
+                <Card
+                  name={cafe.name}
+                  key={cafe.name}
+                  imgUrl={cafe.imgUrl}
+                  href={`/coffee-store/${cafe.id}`}
+                  className={styles.card}
+                />
+              );
+            })}
+          </div>
         </div>
       </main>
     </div>
