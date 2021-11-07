@@ -4,7 +4,7 @@ import styles from '../styles/Home.module.css';
 import Banner from '../components/banner';
 import Card from '../components/card';
 
-import cafeData from '../data/coffee-stores.json';
+import cafeData from '../data/cafes.json';
 
 export async function getStaticProps(context) {
   //const data = fetch(cafes);
@@ -49,7 +49,7 @@ export default function Home(props) {
                       name={cafe.name}
                       key={cafe.id}
                       imgUrl={cafe.imgUrl}
-                      href={`/coffee-store/${cafe.id}`}
+                      href={`/cafe/${cafe.id}`}
                     />
                   );
                 })}
