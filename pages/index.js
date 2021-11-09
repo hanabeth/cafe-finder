@@ -3,15 +3,13 @@ import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import Banner from '../components/banner';
 import Card from '../components/card';
-
-import cafeData from '../data/cafes.json';
+import { fetchCafes } from '../lib/cafes';
 
 export async function getStaticProps(context) {
-  //const data = fetch(cafes);
-  console.log('in getStaticProps');
+  const cafes = await fetchCafes();
   return {
     props: {
-      cafes: cafeData,
+      cafes,
     },
   };
 }
@@ -48,7 +46,10 @@ export default function Home(props) {
                     <Card
                       name={cafe.name}
                       key={cafe.id}
-                      imgUrl={cafe.imgUrl}
+                      imgUrl={
+                        cafe.imgUrl ||
+                        'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+                      }
                       href={`/cafe/${cafe.id}`}
                     />
                   );
