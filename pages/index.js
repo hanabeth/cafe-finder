@@ -22,17 +22,20 @@ export default function Home(props) {
   const [cafes, setCafes] = useState('');
   const [error, setError] = useState(null);
 
-  useEffect(async () => {
-    if (latLong) {
-      try {
-        const fetchedCafes = await fetchCafes(latLong, 30);
-        console.log({ fetchedCafes });
-        setCafes(fetchedCafes);
-      } catch (error) {
-        console.log({ error });
-        setError(error.message);
+  useEffect(() => {
+    async function fetchData() {
+      if (latLong) {
+        try {
+          const fetchedCafes = await fetchCafes(latLong, 30);
+          console.log({ fetchedCafes });
+          setCafes(fetchedCafes);
+        } catch (error) {
+          console.log({ error });
+          setError(error.message);
+        }
       }
     }
+    fetchData();
   }, [latLong]);
 
   const handleOnBannerBtnClick = () => {
