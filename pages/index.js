@@ -5,7 +5,8 @@ import Banner from '../components/banner';
 import Card from '../components/card';
 import { fetchCafes } from '../lib/cafes';
 import useTrackLocation from '../hooks/use-track-location';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { ACTION_TYPES, StoreContext } from '../store/store-context';
 
 export async function getStaticProps(context) {
   const cafes = await fetchCafes();
@@ -17,10 +18,13 @@ export async function getStaticProps(context) {
 }
 
 export default function Home(props) {
-  const { handleTrackLocation, latLong, locationErrorMsg, loadingLocation } =
+  const { handleTrackLocation, locationErrorMsg, loadingLocation } =
     useTrackLocation();
-  const [cafes, setCafes] = useState('');
+  // const [cafes, setCafes] = useState('');
   const [error, setError] = useState(null);
+
+  const { dispatch, state } = useContext(StoreContext);
+  const { cafes, latLong } = state;
 
   useEffect(() => {
     async function fetchData() {
@@ -28,7 +32,13 @@ export default function Home(props) {
         try {
           const fetchedCafes = await fetchCafes(latLong, 30);
           console.log({ fetchedCafes });
-          setCafes(fetchedCafes);
+          // setCafes(fetchedCafes);
+          dispatch({
+            type: ACTION_TYPES.SET_CAFES,
+            payload: {
+              cafes: fetchedCafes,
+            },
+          });
         } catch (error) {
           console.log({ error });
           setError(error.message);

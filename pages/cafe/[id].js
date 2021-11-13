@@ -6,14 +6,18 @@ import cls from 'classnames';
 import { fetchCafes } from '../../lib/cafes';
 
 import styles from '../../styles/cafe.module.css';
+import { useContext, useEffect, useState } from 'react';
+import { StoreContext } from '../../store/store-context';
+import { isEmpty } from '../../utils';
 
 export async function getStaticProps({ params }) {
   const cafes = await fetchCafes();
+  const findCafeById = cafes.find((cafe) => {
+    return cafe.id.toString() === params.id;
+  });
   return {
     props: {
-      cafe: cafes.find((cafe) => {
-        return cafe.id.toString() === params.id;
-      }),
+      cafe: findCafeById ? findCafeById : {},
     },
   };
 }
@@ -29,18 +33,35 @@ export async function getStaticPaths() {
   });
   return {
     paths,
-    fallback: false,
+    fallback: true,
   };
 }
 
-const CoffeeStore = (props) => {
+const CoffeeStore = (initialProps) => {
   const router = useRouter();
 
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
 
-  const { id, name, address, neighborhood, imgUrl } = props.cafe;
+  const id = router.query.id;
+  const [cafe, setCafe] = useState(initialProps.cafe);
+  const {
+    state: { cafes },
+  } = useContext(StoreContext);
+
+  useEffect(() => {
+    if (isEmpty(initialProps.cafe)) {
+      if (cafes.length > 0) {
+        const findCafeById = cafes.find((cafe) => {
+          return cafe.id.toString() === id;
+        });
+        setCafe(findCafeById);
+      }
+    }
+  }, [id]);
+
+  const { name, address, neighborhood, imgUrl } = cafe;
 
   const handleUpvoteButton = () => {
     console.log('handle upvote');
