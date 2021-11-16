@@ -50,16 +50,47 @@ const CoffeeStore = (initialProps) => {
     state: { cafes },
   } = useContext(StoreContext);
 
+  const handleCreateCafe = async (cafe) => {
+    try {
+      const { id, name, voting, imgUrl, neighborhood, address } = cafe;
+      const response = await fetch('/api/createCafe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          name,
+          voting: 0,
+          imgUrl,
+          neighborhood: neighborhood || '',
+          address: address || '',
+        }),
+      });
+
+      const dbCafe = await response.json();
+      console.log({ dbCafe });
+    } catch (error) {
+      console.log('Error creating cafe ', error);
+    }
+  };
+
   useEffect(() => {
     if (isEmpty(initialProps.cafe)) {
       if (cafes.length > 0) {
-        const findCafeById = cafes.find((cafe) => {
+        const cafeFromContext = cafes.find((cafe) => {
           return cafe.id.toString() === id;
         });
-        setCafe(findCafeById);
+        if (cafeFromContext) {
+          setCafe(cafeFromContext);
+          handleCreateCafe(cafeFromContext);
+        }
       }
+    } else {
+      //Statically generated route - create cafe from static props
+      handleCreateCafe(initialProps.cafe);
     }
-  }, [id]);
+  }, [id, initialProps, initialProps.cafe]);
 
   const { name, address, neighborhood, imgUrl } = cafe;
 

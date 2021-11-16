@@ -1,35 +1,45 @@
-const Airtable = require('airtable');
-const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
-  process.env.AIRTABLE_BASE_KEY
-);
-
-const table = base('cafes');
-console.log({ table });
+import { table, getMinifiedRecords } from '../../lib/airtable';
 
 const createCafe = async (req, res) => {
-  console.log({ req });
   if (req.method === 'POST') {
-    try {
-      const findCafeRecords = await table
-        .select({
-          filterByFormula: `id="0"`,
-        })
-        .firstPage();
+    const { id, name, address, neighborhood, imgUrl, voting } = req.body;
 
-      if (findCafeRecords.length !== 0) {
-        const records = findCafeRecords.map((record) => {
-          return {
-            ...record.fields,
-          };
-        });
-        res.json(records);
+    try {
+      if (id) {
+        const findCafeRecords = await table
+          .select({
+            filterByFormula: `id="${id}"`,
+          })
+          .firstPage();
+        if (findCafeRecords.length !== 0) {
+          const records = getMinifiedRecords(findCafeRecords);
+          res.json(records);
+        } else {
+          if (name) {
+            const createRecords = await table.create([
+              {
+                fields: {
+                  id,
+                  name,
+                  address,
+                  neighborhood,
+                  voting,
+                  imgUrl,
+                },
+              },
+            ]);
+            const records = getMinifiedRecords(createRecords);
+            res.json(records);
+          }
+          res.status(400);
+          res.json({ message: 'Cafe name is missing' });
+        }
       } else {
-        // create record
+        res.json({ message: 'Cafe ID is missing' });
       }
     } catch (error) {
-      console.log({ error });
       res.status(500);
-      res.json({ message: 'Error finding cafe - ', err });
+      res.json({ message: 'Error creating or finding cafe - ', error });
     }
   }
 };
