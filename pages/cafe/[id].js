@@ -94,8 +94,10 @@ const CoffeeStore = (initialProps) => {
 
   const { name, address, neighborhood, imgUrl } = cafe;
 
+  const [votingCount, setVotingCount] = useState(1);
+
   const handleUpvoteButton = () => {
-    console.log('handle upvote');
+    setVotingCount(votingCount + 1);
   };
 
   return (
@@ -127,18 +129,33 @@ const CoffeeStore = (initialProps) => {
 
         <div className={cls('glass', styles.col2)}>
           <div className={styles.iconWrapper}>
-            <Image src="/static/icons/places.svg" width="24" height="24" />
+            <Image
+              src="/static/icons/places.svg"
+              alt="places icon"
+              width="24"
+              height="24"
+            />
             <p className={styles.text}>{address}</p>
           </div>
           {neighborhood && (
             <div className={styles.iconWrapper}>
-              <Image src="/static/icons/nearMe.svg" width="24" height="24" />
+              <Image
+                src="/static/icons/nearMe.svg"
+                alt="near me icon"
+                width="24"
+                height="24"
+              />
               <p className={styles.text}>{neighborhood}</p>
             </div>
           )}
           <div className={styles.iconWrapper}>
-            <Image src="/static/icons/star.svg" width="24" height="24" />
-            <p className={styles.text}>1</p>
+            <Image
+              src="/static/icons/star.svg"
+              alt="star icon"
+              width="24"
+              height="24"
+            />
+            <p className={styles.text}>{votingCount}</p>
           </div>
 
           <button className={styles.upvoteButton} onClick={handleUpvoteButton}>
