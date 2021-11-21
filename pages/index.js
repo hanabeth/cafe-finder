@@ -20,7 +20,6 @@ export async function getStaticProps(context) {
 export default function Home(props) {
   const { handleTrackLocation, locationErrorMsg, loadingLocation } =
     useTrackLocation();
-  // const [cafes, setCafes] = useState('');
   const [error, setError] = useState(null);
 
   const { dispatch, state } = useContext(StoreContext);
@@ -42,7 +41,6 @@ export default function Home(props) {
           });
           setError('');
         } catch (error) {
-          console.log({ error });
           setError(error.message);
         }
       }

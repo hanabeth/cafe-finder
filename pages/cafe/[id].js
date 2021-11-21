@@ -53,7 +53,7 @@ const Cafe = (initialProps) => {
 
   const handleCreateCafe = async (cafe) => {
     try {
-      const { id, name, voting, imgUrl, neighborhood, address } = cafe;
+      const { id, name, imgUrl, neighborhood, address } = cafe;
       const response = await fetch('/api/createCafe', {
         method: 'POST',
         headers: {
@@ -68,11 +68,8 @@ const Cafe = (initialProps) => {
           address: address || '',
         }),
       });
-
-      const dbCafe = await response.json();
-      console.log({ dbCafe });
     } catch (error) {
-      console.log('Error creating cafe ', error);
+      console.error('Error creating cafe ', error);
     }
   };
 
@@ -88,14 +85,13 @@ const Cafe = (initialProps) => {
         }
       }
     } else {
-      //Statically generated route - create cafe from static props
       handleCreateCafe(initialProps.cafe);
     }
   }, [id, initialProps, initialProps.cafe]);
 
   const { name, address, neighborhood, imgUrl } = cafe;
 
-  const [votingCount, setVotingCount] = useState(1);
+  const [votingCount, setVotingCount] = useState(0);
 
   const { data, error } = useSWR(`/api/getCafeById?id=${id}`);
 
@@ -118,12 +114,10 @@ const Cafe = (initialProps) => {
         }),
       });
 
-      const dbCafe = await response.json();
-      console.log({ dbCafe });
       let count = votingCount + 1;
       setVotingCount(count);
     } catch (error) {
-      console.log('Error upvoting cafe ', error);
+      console.error('Error upvoting cafe ', error);
     }
   };
 
