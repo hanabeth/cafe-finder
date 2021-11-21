@@ -9,6 +9,7 @@ import styles from '../../styles/cafe.module.css';
 import { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../store/store-context';
 import { isEmpty } from '../../utils';
+import useSWR from 'swr';
 
 export async function getStaticProps({ params }) {
   const cafes = await fetchCafes();
@@ -37,7 +38,7 @@ export async function getStaticPaths() {
   };
 }
 
-const CoffeeStore = (initialProps) => {
+const Cafe = (initialProps) => {
   const router = useRouter();
 
   if (router.isFallback) {
@@ -96,9 +97,39 @@ const CoffeeStore = (initialProps) => {
 
   const [votingCount, setVotingCount] = useState(1);
 
-  const handleUpvoteButton = () => {
-    setVotingCount(votingCount + 1);
+  const { data, error } = useSWR(`/api/getCafeById?id=${id}`);
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setCafe(data[0]);
+      setVotingCount(data[0].voting);
+    }
+  }, [data]);
+
+  const handleUpvoteButton = async () => {
+    try {
+      const response = await fetch('/api/favoriteCafeById', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+
+      const dbCafe = await response.json();
+      console.log({ dbCafe });
+      let count = votingCount + 1;
+      setVotingCount(count);
+    } catch (error) {
+      console.log('Error upvoting cafe ', error);
+    }
   };
+
+  if (error) {
+    return <div>Error when retrieving cafe!</div>;
+  }
 
   return (
     <div className={styles.layout}>
@@ -167,4 +198,4 @@ const CoffeeStore = (initialProps) => {
   );
 };
 
-export default CoffeeStore;
+export default Cafe;
